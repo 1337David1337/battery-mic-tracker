@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Учёт батареек микрофонов</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="hero">
+        <p class="eyebrow">Воскресный чек оборудования</p>
+        <h1>Учёт батареек AA</h1>
+        <p class="lead">
+          Отмечай использование беспроводного Shure и комплекта для головного микрофона.
+          Обычно батареек хватает на 2 раза, максимум на 3.
+        </p>
+      </section>
+
+      <section class="devices" aria-label="Состояние батареек оборудования">
+        <article class="device-card" data-device-id="shure">
+          <div class="visual-card">
+            <div class="wireless-set" aria-hidden="true">
+              <div class="radio-mic radio-mic-back">
+                <div class="radio-grille"></div>
+                <div class="radio-body">
+                  <strong>SHURE</strong>
+                  <span class="mic-dot"></span>
+                </div>
+              </div>
+
+              <div class="radio-mic radio-mic-front">
+                <div class="radio-grille"></div>
+                <div class="radio-body">
+                  <strong>SHURE</strong>
+                  <span class="mic-dot"></span>
+                </div>
+              </div>
+
+              <div class="shure-receiver">
+                <strong>SHURE</strong>
+                <span class="receiver-led"></span>
+                <div class="receiver-display">
+                  <div class="battery-level" data-role="battery-level"></div>
+                </div>
+                <span class="receiver-knob"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="status-card">
+            <div>
+              <p class="label">Беспроводной ручной микрофон</p>
+              <h2>Shure без провода</h2>
+              <p class="usage-count"><span data-role="usage-count">0</span> раз</p>
+            </div>
+
+            <div class="charge">
+              <p class="label">Примерный заряд</p>
+              <p class="charge-value" data-role="charge-value">100%</p>
+              <p class="hint" data-role="charge-hint">Батарейки свежие.</p>
+            </div>
+
+            <div class="empty-state" data-role="empty-state" hidden>
+              Батарейки закончились. Сначала замените их, затем можно будет отметить новое использование.
+            </div>
+
+            <div class="meta">
+              <p><span>Последнее использование:</span> <strong data-role="last-used">ещё не отмечено</strong></p>
+              <p><span>Последняя замена:</span> <strong data-role="replaced-at">сегодня</strong></p>
+            </div>
+
+            <div class="actions">
+              <button class="primary" data-action="use" type="button">Использовали сегодня</button>
+              <button class="secondary" data-action="replace" type="button">Заменили батарейки</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="device-card" data-device-id="headset">
+          <div class="visual-card">
+            <div class="headset-kit" aria-hidden="true">
+              <div class="receiver">
+                <span class="antenna"></span>
+                <strong>SENNHEISER</strong>
+                <div class="receiver-screen">
+                  <div class="battery-level" data-role="battery-level"></div>
+                </div>
+              </div>
+              <div class="headset">
+                <span class="ear"></span>
+                <span class="boom"></span>
+                <span class="capsule"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="status-card">
+            <div>
+              <p class="label">Приёмник для головного микрофона пастора</p>
+              <h2>Sennheiser пастора</h2>
+              <p class="usage-count"><span data-role="usage-count">0</span> раз</p>
+            </div>
+
+            <div class="charge">
+              <p class="label">Примерный заряд</p>
+              <p class="charge-value" data-role="charge-value">100%</p>
+              <p class="hint" data-role="charge-hint">Батарейки свежие.</p>
+            </div>
+
+            <div class="empty-state" data-role="empty-state" hidden>
+              Батарейки закончились. Сначала замените их, затем можно будет отметить новое использование.
+            </div>
+
+            <div class="meta">
+              <p><span>Последнее использование:</span> <strong data-role="last-used">ещё не отмечено</strong></p>
+              <p><span>Последняя замена:</span> <strong data-role="replaced-at">сегодня</strong></p>
+            </div>
+
+            <div class="actions">
+              <button class="primary" data-action="use" type="button">Использовали сегодня</button>
+              <button class="secondary" data-action="replace" type="button">Заменили батарейки</button>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

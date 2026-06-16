@@ -1,0 +1,480 @@
+:root {
+  color-scheme: light;
+  --bg: #f5f5f7;
+  --card: rgba(255, 255, 255, 0.82);
+  --card-solid: #ffffff;
+  --line: rgba(0, 0, 0, 0.08);
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --soft: #f2f2f7;
+  --green: #34c759;
+  --yellow: #ffcc00;
+  --red: #ff3b30;
+  --accent: #007aff;
+  --metal: #d2d2d7;
+  --metal-dark: #8e8e93;
+  --shadow: 0 18px 55px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(0, 122, 255, 0.12), transparent 32rem),
+    radial-gradient(circle at bottom right, rgba(52, 199, 89, 0.08), transparent 28rem),
+    var(--bg);
+}
+
+button {
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 56px 0;
+}
+
+.hero {
+  max-width: 740px;
+  margin: 0 auto 36px;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(42px, 7vw, 72px);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.lead {
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 19px;
+  line-height: 1.5;
+}
+
+.devices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.device-card,
+.visual-card,
+.status-card {
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(22px);
+}
+
+.device-card {
+  display: grid;
+  grid-template-rows: minmax(340px, auto) 1fr;
+  gap: 18px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.visual-card {
+  display: grid;
+  place-items: center;
+  min-height: 310px;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.visual-card::before {
+  content: "";
+  position: absolute;
+  inset: 54px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(0, 122, 255, 0.08), rgba(0, 0, 0, 0.02));
+}
+
+.wireless-set,
+.headset-kit {
+  position: relative;
+  z-index: 1;
+}
+
+.wireless-set {
+  width: min(420px, 100%);
+  height: 230px;
+}
+
+.radio-mic {
+  position: absolute;
+  left: 54px;
+  display: flex;
+  align-items: center;
+  filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.16));
+}
+
+.radio-mic-back {
+  top: 28px;
+  transform: rotate(12deg);
+}
+
+.radio-mic-front {
+  top: 96px;
+  left: 10px;
+  transform: rotate(4deg);
+}
+
+.radio-grille {
+  width: 82px;
+  height: 82px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 50%;
+  background:
+    repeating-linear-gradient(35deg, transparent 0 5px, rgba(0, 0, 0, 0.18) 5px 7px),
+    repeating-linear-gradient(-35deg, transparent 0 5px, rgba(0, 0, 0, 0.16) 5px 7px),
+    linear-gradient(135deg, #f7f7f8, #aeb0b6);
+  box-shadow: inset -8px -8px 18px rgba(0, 0, 0, 0.16);
+}
+
+.radio-body {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 44px;
+  width: 250px;
+  height: 56px;
+  margin-left: -8px;
+  padding: 0 20px;
+  border-radius: 0 28px 28px 0;
+  color: #ffffff;
+  background: linear-gradient(90deg, #202124, #050506);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.radio-body strong,
+.receiver strong {
+  font-size: 14px;
+  letter-spacing: 0.14em;
+}
+
+.mic-dot,
+.receiver-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #b7f343;
+  box-shadow: 0 0 10px rgba(183, 243, 67, 0.72);
+}
+
+.shure-receiver {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 12px;
+  display: grid;
+  grid-template-columns: auto 8px 1fr 20px;
+  align-items: center;
+  gap: 18px;
+  height: 72px;
+  padding: 0 20px;
+  border-radius: 22px;
+  color: #ffffff;
+  background: linear-gradient(180deg, #1c1c1e, #050506);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 20px 30px rgba(0, 0, 0, 0.18);
+}
+
+.receiver-display {
+  width: 92px;
+  height: 30px;
+  padding: 5px;
+  border: 1px solid rgba(183, 243, 67, 0.34);
+  border-radius: 8px;
+  background: rgba(183, 243, 67, 0.1);
+}
+
+.receiver-knob {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #3a3a3c, #111113);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.inline-battery,
+.receiver-screen {
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.inline-battery {
+  width: 128px;
+  height: 24px;
+  padding: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 999px;
+}
+
+.headset-kit {
+  display: grid;
+  justify-items: center;
+  gap: 28px;
+}
+
+.receiver {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 18px;
+  width: 210px;
+  height: 232px;
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 36px;
+  background: linear-gradient(180deg, #2c2c2e, #08080a);
+  color: #f5f5f7;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -16px 32px rgba(0, 0, 0, 0.28);
+}
+
+.antenna {
+  position: absolute;
+  top: -72px;
+  right: 36px;
+  width: 5px;
+  height: 78px;
+  border-radius: 999px;
+  background: #1c1c1e;
+  transform: rotate(16deg);
+  transform-origin: bottom center;
+}
+
+.receiver-screen {
+  width: 128px;
+  height: 42px;
+  padding: 5px;
+  border: 1px solid rgba(183, 243, 67, 0.3);
+  border-radius: 12px;
+  background: rgba(183, 243, 67, 0.08);
+}
+
+.headset {
+  position: relative;
+  width: 250px;
+  height: 90px;
+  border-top: 6px solid var(--metal-dark);
+  border-radius: 50% 50% 0 0;
+}
+
+.ear,
+.capsule {
+  position: absolute;
+  border-radius: 999px;
+  background: var(--metal-dark);
+}
+
+.ear {
+  left: 26px;
+  bottom: 4px;
+  width: 36px;
+  height: 48px;
+}
+
+.boom {
+  position: absolute;
+  left: 58px;
+  bottom: 26px;
+  width: 126px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--metal-dark);
+  transform: rotate(10deg);
+  transform-origin: left center;
+}
+
+.capsule {
+  right: 50px;
+  bottom: 32px;
+  width: 28px;
+  height: 18px;
+}
+
+.battery-level {
+  width: 100%;
+  height: 100%;
+  min-width: 3px;
+  border-radius: 999px;
+  background: var(--green);
+  transition: width 180ms ease, background-color 180ms ease;
+}
+
+.battery-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.battery {
+  width: 116px;
+  height: 42px;
+  padding: 5px;
+  border: 3px solid rgba(255, 255, 255, 0.78);
+  border-radius: 12px;
+}
+
+.battery-cap {
+  width: 8px;
+  height: 18px;
+  border-radius: 0 4px 4px 0;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.status-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 28px;
+  background: var(--card-solid);
+}
+
+.device-card.is-empty .status-card {
+  border-color: rgba(255, 59, 48, 0.22);
+}
+
+.device-card.is-empty .visual-card::before {
+  background: linear-gradient(180deg, rgba(255, 59, 48, 0.1), rgba(0, 0, 0, 0.02));
+}
+
+h2 {
+  margin: 0 0 14px;
+  font-size: 28px;
+  letter-spacing: -0.04em;
+}
+
+.label {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.usage-count {
+  margin: 0;
+  font-size: clamp(44px, 7vw, 72px);
+  font-weight: 700;
+  letter-spacing: -0.06em;
+}
+
+.charge {
+  padding: 18px;
+  border-radius: 22px;
+  background: var(--soft);
+}
+
+.charge-value {
+  margin: 0;
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.hint {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.empty-state {
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 59, 48, 0.2);
+  border-radius: 18px;
+  color: #b42318;
+  background: rgba(255, 59, 48, 0.08);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.meta {
+  display: grid;
+  gap: 10px;
+  color: var(--muted);
+}
+
+.meta p {
+  margin: 0;
+}
+
+.meta strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.actions button {
+  min-height: 48px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 120ms ease, opacity 120ms ease, background-color 120ms ease;
+}
+
+.actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+  transform: none;
+}
+
+.actions button:active {
+  transform: scale(0.98);
+}
+
+.primary {
+  color: #ffffff;
+  background: var(--accent);
+}
+
+.secondary {
+  color: var(--accent);
+  background: rgba(0, 122, 255, 0.1);
+}
+
+@media (max-width: 900px) {
+  .devices {
+    grid-template-columns: 1fr;
+  }
+
+  .visual-card {
+    min-height: 320px;
+  }
+}
+
+@media (max-width: 520px) {
+  .wireless-set {
+    transform: scale(0.86);
+  }
+
+  .headset-kit {
+    transform: scale(0.86);
+  }
+}
