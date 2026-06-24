@@ -1,12 +1,13 @@
 const STORAGE_KEY = "battery-mic-tracker:v2";
-const MAX_USES = 3;
 
 const devices = {
   shure: {
     name: "Shure без провода",
+    maxUses: 3,
   },
   headset: {
-    name: "комплект спикера",
+    name: "Sennheiser пастора",
+    maxUses: 2,
   },
 };
 
@@ -73,20 +74,12 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
-function getChargePercent(usageCount) {
+function getChargePercent(usageCount, maxUses) {
   if (usageCount <= 0) {
     return 100;
   }
 
-  if (usageCount === 1) {
-    return 66;
-  }
-
-  if (usageCount === 2) {
-    return 33;
-  }
-
-  return 0;
+  return Math.max(0, Math.round(((maxUses - usageCount) / maxUses) * 100));
 }
 
 function getBatteryColor(percent) {
@@ -101,17 +94,17 @@ function getBatteryColor(percent) {
   return "var(--red)";
 }
 
-function getHint(usageCount, percent) {
+function getHint(usageCount, maxUses) {
   if (usageCount === 0) {
     return "Батарейки свежие.";
   }
 
-  if (usageCount === 1) {
+  if (usageCount < maxUses - 1) {
     return "Остался запас ещё примерно на одно воскресенье.";
   }
 
-  if (usageCount === 2 && percent > 0) {
-    return "Это нормальный предел. Лучше подготовить замену.";
+  if (usageCount === maxUses - 1) {
+    return "Это последнее надёжное использование. Лучше подготовить замену.";
   }
 
   return "Заряд закончился. Использование больше не отмечаем до замены.";
@@ -134,13 +127,14 @@ function renderDevice(deviceId) {
   const card = document.querySelector(`[data-device-id="${deviceId}"]`);
   const elements = getElements(card);
   const deviceState = state[deviceId];
-  const isEmpty = deviceState.usageCount >= MAX_USES;
-  const percent = getChargePercent(deviceState.usageCount);
+  const maxUses = devices[deviceId].maxUses;
+  const isEmpty = deviceState.usageCount >= maxUses;
+  const percent = getChargePercent(deviceState.usageCount, maxUses);
 
   card.classList.toggle("is-empty", isEmpty);
   elements.usageCount.textContent = deviceState.usageCount;
   elements.chargeValue.textContent = `${percent}%`;
-  elements.chargeHint.textContent = getHint(deviceState.usageCount, percent);
+  elements.chargeHint.textContent = getHint(deviceState.usageCount, maxUses);
   elements.lastUsed.textContent = formatDate(deviceState.lastUsed);
   elements.replacedAt.textContent = formatDate(deviceState.replacedAt);
   elements.batteryLevel.style.width = `${percent}%`;
@@ -168,7 +162,7 @@ function updateDevice(deviceId, nextDeviceState) {
 }
 
 function useDevice(deviceId) {
-  if (state[deviceId].usageCount >= MAX_USES) {
+  if (state[deviceId].usageCount >= devices[deviceId].maxUses) {
     return;
   }
 
