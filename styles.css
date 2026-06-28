@@ -69,6 +69,35 @@ h1 {
   line-height: 1.5;
 }
 
+.sync-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  margin: 18px 0 0;
+  padding: 0 14px;
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sync-status[data-state="online"] {
+  color: #1f7a3a;
+  background: rgba(52, 199, 89, 0.12);
+}
+
+.sync-status[data-state="syncing"] {
+  color: #755a00;
+  background: rgba(255, 204, 0, 0.18);
+}
+
+.sync-status[data-state="offline"] {
+  color: #b42318;
+  background: rgba(255, 59, 48, 0.1);
+}
+
 .devices {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -1,4 +1,5 @@
 const STORAGE_KEY = "battery-mic-tracker:v2";
+const TABLE_NAME = "battery_state";
 
 const devices = {
   shure: {
@@ -19,10 +20,19 @@ const defaultDeviceState = {
   replacedAt: today,
 };
 
-function loadState() {
-  const initialState = Object.fromEntries(
-    Object.keys(devices).map((deviceId) => [deviceId, { ...defaultDeviceState }]),
-  );
+const syncStatusEl = document.querySelector('[data-role="sync-status"]');
+
+let state = getInitialState();
+let supabaseClient = null;
+let remoteEnabled = false;
+let realtimeChannel = null;
+
+function getInitialState() {
+  return Object.fromEntries(Object.keys(devices).map((deviceId) => [deviceId, { ...defaultDeviceState }]));
+}
+
+function loadLocalState() {
+  const initialState = getInitialState();
   const saved = readSavedState();
 
   if (!saved) {
@@ -46,6 +56,32 @@ function loadState() {
   }
 }
 
+function normalizeStateRows(rows) {
+  const nextState = getInitialState();
+
+  rows.forEach((row) => {
+    if (!devices[row.device_id]) {
+      return;
+    }
+
+    nextState[row.device_id] = {
+      usageCount: Number(row.usage_count) || 0,
+      lastUsed: row.last_used,
+      replacedAt: row.replaced_at || today,
+    };
+  });
+
+  return nextState;
+}
+
+function normalizeDeviceRow(row) {
+  return {
+    usageCount: Number(row.usage_count) || 0,
+    lastUsed: row.last_used,
+    replacedAt: row.replaced_at || today,
+  };
+}
+
 function readSavedState() {
   try {
     return localStorage.getItem(STORAGE_KEY);
@@ -54,12 +90,113 @@ function readSavedState() {
   }
 }
 
-function saveState(nextState) {
+function saveLocalState(nextState) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
   } catch {
     // Private browsing or restricted file access can block localStorage.
   }
+}
+
+function getSupabaseConfig() {
+  return window.BATTERY_TRACKER_SUPABASE || {};
+}
+
+function hasSupabaseConfig() {
+  const config = getSupabaseConfig();
+
+  return Boolean(config.url && config.anonKey);
+}
+
+function setSyncStatus(message, stateName = "local") {
+  syncStatusEl.textContent = message;
+  syncStatusEl.dataset.state = stateName;
+}
+
+function createSupabaseClient() {
+  if (!hasSupabaseConfig()) {
+    setSyncStatus("Локальный режим: Supabase ещё не настроен", "local");
+    return null;
+  }
+
+  if (!window.supabase) {
+    setSyncStatus("Локальный режим: Supabase SDK не загрузился", "offline");
+    return null;
+  }
+
+  const config = getSupabaseConfig();
+
+  return window.supabase.createClient(config.url, config.anonKey);
+}
+
+async function loadRemoteState() {
+  const { data, error } = await supabaseClient.from(TABLE_NAME).select("*");
+
+  if (error) {
+    throw error;
+  }
+
+  return normalizeStateRows(data || []);
+}
+
+async function saveRemoteDevice(deviceId) {
+  if (!remoteEnabled || !supabaseClient) {
+    return;
+  }
+
+  const deviceState = state[deviceId];
+  const { error } = await supabaseClient.from(TABLE_NAME).upsert({
+    device_id: deviceId,
+    usage_count: deviceState.usageCount,
+    last_used: deviceState.lastUsed,
+    replaced_at: deviceState.replacedAt,
+    updated_at: new Date().toISOString(),
+  });
+
+  if (error) {
+    throw error;
+  }
+}
+
+function subscribeToRemoteChanges() {
+  if (!remoteEnabled || !supabaseClient || realtimeChannel) {
+    return;
+  }
+
+  realtimeChannel = supabaseClient
+    .channel("battery-state")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: TABLE_NAME,
+      },
+      (payload) => {
+        if (!payload.new || !devices[payload.new.device_id]) {
+          return;
+        }
+
+        state = {
+          ...state,
+          [payload.new.device_id]: normalizeDeviceRow(payload.new),
+        };
+
+        saveLocalState(state);
+        renderDevice(payload.new.device_id);
+        setSyncStatus("Синхронизировано", "online");
+      },
+    )
+    .subscribe((status) => {
+      if (status === "SUBSCRIBED") {
+        setSyncStatus("Синхронизация включена", "online");
+        return;
+      }
+
+      if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
+        setSyncStatus("Realtime недоступен, данные обновятся при перезагрузке", "offline");
+      }
+    });
 }
 
 function formatDate(value) {
@@ -148,7 +285,7 @@ function render() {
   Object.keys(devices).forEach(renderDevice);
 }
 
-function updateDevice(deviceId, nextDeviceState) {
+async function updateDevice(deviceId, nextDeviceState) {
   state = {
     ...state,
     [deviceId]: {
@@ -157,8 +294,21 @@ function updateDevice(deviceId, nextDeviceState) {
     },
   };
 
-  saveState(state);
+  saveLocalState(state);
   renderDevice(deviceId);
+
+  if (!remoteEnabled) {
+    setSyncStatus("Сохранено только на этом устройстве", "local");
+    return;
+  }
+
+  try {
+    setSyncStatus("Сохраняем...", "syncing");
+    await saveRemoteDevice(deviceId);
+    setSyncStatus("Синхронизировано", "online");
+  } catch {
+    setSyncStatus("Нет связи с базой, сохранено локально", "offline");
+  }
 }
 
 function useDevice(deviceId) {
@@ -166,7 +316,7 @@ function useDevice(deviceId) {
     return;
   }
 
-  updateDevice(deviceId, {
+  void updateDevice(deviceId, {
     usageCount: state[deviceId].usageCount + 1,
     lastUsed: new Date().toISOString(),
   });
@@ -179,7 +329,7 @@ function replaceBatteries(deviceId) {
     return;
   }
 
-  updateDevice(deviceId, {
+  void updateDevice(deviceId, {
     usageCount: 0,
     lastUsed: null,
     replacedAt: new Date().toISOString(),
@@ -198,10 +348,32 @@ function bindDeviceControls(card) {
   });
 }
 
-let state = loadState();
+async function initializeApp() {
+  state = loadLocalState();
+  render();
+
+  supabaseClient = createSupabaseClient();
+
+  if (!supabaseClient) {
+    return;
+  }
+
+  try {
+    setSyncStatus("Загружаем данные из Supabase...", "syncing");
+    state = await loadRemoteState();
+    saveLocalState(state);
+    remoteEnabled = true;
+    render();
+    setSyncStatus("Синхронизация включена", "online");
+    subscribeToRemoteChanges();
+  } catch {
+    remoteEnabled = false;
+    setSyncStatus("Нет связи с базой, работаем локально", "offline");
+  }
+}
 
 document.querySelectorAll("[data-device-id]").forEach((card) => {
   bindDeviceControls(card);
 });
 
-render();
+void initializeApp();
